@@ -1,0 +1,513 @@
+
+<!doctype html>
+<html lang='nb-no'>
+<head>
+<style>
+
+    .highlight .hll { background-color: #ffffcc }
+    .highlight  { background: #f8f8f8; }
+    .highlight .c { color: #408080; font-style: italic } /* Comment */
+    .highlight .err { border: 1px solid #FF0000 } /* Error */
+    .highlight .k { color: #008000; font-weight: bold } /* Keyword */
+    .highlight .o { color: #666666 } /* Operator */
+    .highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+    .highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+    .highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+    .highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+    .highlight .gd { color: #A00000 } /* Generic.Deleted */
+    .highlight .ge { font-style: italic } /* Generic.Emph */
+    .highlight .gr { color: #FF0000 } /* Generic.Error */
+    .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+    .highlight .gi { color: #00A000 } /* Generic.Inserted */
+    .highlight .go { color: #808080 } /* Generic.Output */
+    .highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+    .highlight .gs { font-weight: bold } /* Generic.Strong */
+    .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+    .highlight .gt { color: #0040D0 } /* Generic.Traceback */
+    .highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+    .highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+    .highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+    .highlight .kp { color: #008000 } /* Keyword.Pseudo */
+    .highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+    .highlight .kt { color: #B00040 } /* Keyword.Type */
+    .highlight .m { color: #666666 } /* Literal.Number */
+    .highlight .s { color: #BA2121 } /* Literal.String */
+    .highlight .na { color: #7D9029 } /* Name.Attribute */
+    .highlight .nb { color: #008000 } /* Name.Builtin */
+    .highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+    .highlight .no { color: #880000 } /* Name.Constant */
+    .highlight .nd { color: #AA22FF } /* Name.Decorator */
+    .highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+    .highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+    .highlight .nf { color: #0000FF } /* Name.Function */
+    .highlight .nl { color: #A0A000 } /* Name.Label */
+    .highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+    .highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+    .highlight .nv { color: #19177C } /* Name.Variable */
+    .highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+    .highlight .w { color: #bbbbbb } /* Text.Whitespace */
+    .highlight .mf { color: #666666 } /* Literal.Number.Float */
+    .highlight .mh { color: #666666 } /* Literal.Number.Hex */
+    .highlight .mi { color: #666666 } /* Literal.Number.Integer */
+    .highlight .mo { color: #666666 } /* Literal.Number.Oct */
+    .highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+    .highlight .sc { color: #BA2121 } /* Literal.String.Char */
+    .highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+    .highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+    .highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+    .highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+    .highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+    .highlight .sx { color: #008000 } /* Literal.String.Other */
+    .highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+    .highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+    .highlight .ss { color: #19177C } /* Literal.String.Symbol */
+    .highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+    .highlight .vc { color: #19177C } /* Name.Variable.Class */
+    .highlight .vg { color: #19177C } /* Name.Variable.Global */
+    .highlight .vi { color: #19177C } /* Name.Variable.Instance */
+    .highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+    ul.errdescr {font-weight:bold; color:red; margin:0;padding:14px 3ex; white-space:normal;list-style-type:none;border:1px solid #666; border-radius:0 5px 5px;}
+    
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="lineno">  1</span> <span class="c"># -*- coding: utf-8 -*-</span>
+<span class="lineno">  2</span> <span class="sd">&quot;&quot;&quot;Run pylint and produce a Botstrappified report.</span>
+<span class="lineno">  3</span> <span class="sd">&quot;&quot;&quot;</span>
+<span class="lineno">  4</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="lineno">  5</span> <span class="kn">import</span> <span class="nn">os</span>
+<span class="lineno">  6</span> <span class="kn">import</span> <span class="nn">re</span>
+<span class="lineno">  7</span> <span class="kn">import</span> <span class="nn">json</span>
+<span class="lineno">  8</span> <span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span>
+<span class="lineno">  9</span> <span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="lineno"> 10</span> <span class="kn">from</span> <span class="nn">dklint.pfind</span> <span class="kn">import</span> <span class="n">pfind</span>
+<span class="lineno"> 11</span> <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="lineno"> 12</span> 
+<span class="lineno"> 13</span> 
+<span class="lineno"> 14</span> <span class="n">RCFILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;SRV&#39;</span><span class="p">],</span> <span class="s">&#39;bin&#39;</span><span class="p">,</span> <span class="s">&#39;dklint.rc&#39;</span><span class="p">)</span>
+<span class="lineno"> 15</span> <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s">&#39;win32&#39;</span><span class="p">:</span>
+<span class="lineno"> 16</span>     <span class="n">PYLINT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="s">&#39;Scripts&#39;</span><span class="p">,</span> <span class="s">&#39;pylint.exe&#39;</span><span class="p">)</span>
+<span class="lineno"> 17</span> <span class="k">else</span><span class="p">:</span>
+<span class="lineno"> 18</span>     <span class="n">PYLINT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="s">&#39;bin&#39;</span><span class="p">,</span> <span class="s">&#39;pylint&#39;</span><span class="p">)</span>
+<span class="lineno"> 19</span> 
+<span class="lineno"> 20</span> 
+<span class="lineno"> 21</span> <span class="c"># substitutions</span>
+<span class="lineno"> 22</span> <span class="n">subst</span> <span class="o">=</span> <span class="s">r&quot;&quot;&quot;</span>
+<span class="lineno"> 23</span> 
+<span class="lineno"> 24</span> <span class="s">&lt;html&gt;:</span>
+<span class="lineno"> 25</span> <span class="s">    &lt;html&gt;</span>
+<span class="lineno"> 26</span> <span class="s">    &lt;head&gt;</span>
+<span class="lineno"> 27</span> <span class="s">        &lt;link href=&quot;http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;</span>
+<span class="lineno"> 28</span> <span class="s">        &lt;link href=&quot;http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css&quot; rel=&quot;stylesheet&quot;&gt;</span>
+<span class="lineno"> 29</span> <span class="s">        &lt;style&gt;</span>
+<span class="lineno"> 30</span> <span class="s">            td.pre { font: 10px/11px monospace; white-space: pre; }</span>
+<span class="lineno"> 31</span> <span class="s">            a.toplink { font: 11px/10px monospace; position:relative; right: -3ex; }</span>
+<span class="lineno"> 32</span> <span class="s">            table td,</span>
+<span class="lineno"> 33</span> <span class="s">            table th { text-align: center; }</span>
+<span class="lineno"> 34</span> <span class="s">            table td:first-child,</span>
+<span class="lineno"> 35</span> <span class="s">            table th:first-child  { text-align: right; font-weight: bold; }</span>
+<span class="lineno"> 36</span> <span class="s">            table th:first-child  { width: 20%; }</span>
+<span class="lineno"> 37</span> <span class="s">            #messages + table td { font: 11px/12px monospace; white-space: pre; text-align: left; }</span>
+<span class="lineno"> 38</span> <span class="s">        &lt;/style&gt;</span>
+<span class="lineno"> 39</span> <span class="s">        &lt;script src=&quot;http://static.datakortet.no/dk/dk.js&quot;&gt;&lt;/script&gt;</span>
+<span class="lineno"> 40</span> <span class="s">        &lt;script&gt;</span>
+<span class="lineno"> 41</span> <span class="s">        dk.ready(function () {</span>
+<span class="lineno"> 42</span> <span class="s">            var toc = $(&#39;#toc &gt; ul&#39;);</span>
+<span class="lineno"> 43</span> <span class="s">            $(&#39;:header&#39;).each(function () {</span>
+<span class="lineno"> 44</span> <span class="s">                toc.append($(&#39;&lt;li/&gt;&#39;).append($(&#39;&lt;a/&gt;&#39;, {</span>
+<span class="lineno"> 45</span> <span class="s">                    href: &#39;#&#39; + $(this).prop(&#39;id&#39;)</span>
+<span class="lineno"> 46</span> <span class="s">                }).text($(this).text())));</span>
+<span class="lineno"> 47</span> <span class="s">                $(this).append(&#39;&lt;a class=&quot;toplink&quot; href=&quot;#top&quot;&gt;[top]&lt;/a&gt;&#39;);</span>
+<span class="lineno"> 48</span> <span class="s">            });</span>
+<span class="lineno"> 49</span> <span class="s">        });</span>
+<span class="lineno"> 50</span> <span class="s">        &lt;/script&gt;</span>
+<span class="lineno"> 51</span> <span class="s">    &lt;/head&gt;</span>
+<span class="lineno"> 52</span> 
+<span class="lineno"> 53</span> <span class="s">&lt;body&gt;\s*&lt;div&gt;:</span>
+<span class="lineno"> 54</span> <span class="s">    &lt;body&gt;</span>
+<span class="lineno"> 55</span> <span class="s">    &lt;div class=&quot;container&quot;&gt;</span>
+<span class="lineno"> 56</span> <span class="s">    &lt;div id=&quot;toc&quot;&gt;</span>
+<span class="lineno"> 57</span> <span class="s">        &lt;h1&gt;Contents:&lt;/h1&gt;</span>
+<span class="lineno"> 58</span> <span class="s">        &lt;ul&gt;&lt;/ul&gt;</span>
+<span class="lineno"> 59</span> <span class="s">    &lt;/div&gt;</span>
+<span class="lineno"> 60</span> 
+<span class="lineno"> 61</span> <span class="s">&lt;h2&gt;(.*?)&lt;/h2&gt;:</span>
+<span class="lineno"> 62</span> <span class="s">    &lt;h2 id=&quot;$dashify{\1}&quot;&gt;\1&lt;/h2&gt;</span>
+<span class="lineno"> 63</span> 
+<span class="lineno"> 64</span> <span class="s">&lt;table&gt;:</span>
+<span class="lineno"> 65</span> <span class="s">    &lt;table class=&quot;table table-bordered table-striped table-hover table-condensed&quot;&gt;</span>
+<span class="lineno"> 66</span> 
+<span class="lineno"> 67</span> <span class="s">&lt;tr class=&quot;header&quot;&gt;:</span>
+<span class="lineno"> 68</span> <span class="s">    &lt;thead&gt;</span>
+<span class="lineno"> 69</span> <span class="s">    &lt;tr class=&quot;header&quot;&gt;</span>
+<span class="lineno"> 70</span> 
+<span class="lineno"> 71</span> <span class="s">&lt;/th&gt;\s*&lt;/tr&gt;\s*&lt;tr class=&quot;even&quot;&gt;:</span>
+<span class="lineno"> 72</span> <span class="s">    &lt;/th&gt;</span>
+<span class="lineno"> 73</span> <span class="s">    &lt;/thead&gt;</span>
+<span class="lineno"> 74</span> <span class="s">    &lt;tbody&gt;</span>
+<span class="lineno"> 75</span> <span class="s">    &lt;tr&gt;</span>
+<span class="lineno"> 76</span> 
+<span class="lineno"> 77</span> <span class="s">&lt;/td&gt;\s*&lt;td&gt;:</span>
+<span class="lineno"> 78</span> <span class="s">    &lt;/td&gt;&lt;td&gt;</span>
+<span class="lineno"> 79</span> 
+<span class="lineno"> 80</span> <span class="s">&lt;/table&gt;:</span>
+<span class="lineno"> 81</span> <span class="s">    &lt;/tbody&gt;</span>
+<span class="lineno"> 82</span> <span class="s">    &lt;/table&gt;</span>
+<span class="lineno"> 83</span> 
+<span class="lineno"> 84</span> <span class="s">&lt;td&gt;Similar lines:</span>
+<span class="lineno"> 85</span> <span class="s">    &lt;td class=&quot;pre&quot;&gt;Similar lines</span>
+<span class="lineno"> 86</span> 
+<span class="lineno"> 87</span> <span class="s">Your code has been rated at (\d+\.\d+):</span>
+<span class="lineno"> 88</span> <span class="s">    Your code has been rated at $reportgrade{\1}</span>
+<span class="lineno"> 89</span> 
+<span class="lineno"> 90</span> <span class="s">graph has been written to ([-\w]*\.svg):</span>
+<span class="lineno"> 91</span> <span class="s">    $includesvg{\1}</span>
+<span class="lineno"> 92</span> 
+<span class="lineno"> 93</span> <span class="s">&lt;tr class=&quot;even&quot;&gt;:</span>
+<span class="lineno"> 94</span> <span class="s">    &lt;tr&gt;</span>
+<span class="lineno"> 95</span> 
+<span class="lineno"> 96</span> <span class="s">&lt;tr class=&quot;odd&quot;&gt;:</span>
+<span class="lineno"> 97</span> <span class="s">    &lt;tr&gt;</span>
+<span class="lineno"> 98</span> <span class="s">    </span>
+<span class="lineno"> 99</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="lineno">100</span> <span class="c">#&quot;</span>
+<span class="lineno">101</span> 
+<span class="lineno">102</span> <span class="c">#    &lt;a href=&quot;\1&quot;&gt;graph&lt;/a&gt;</span>
+<span class="lineno">103</span> 
+<span class="err hll"><span class="lineno">104</span> <span class="k">def</span> <span class="nf">parse_rule</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">105</span>     <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+<span class="lineno">106</span>     <span class="k">return</span> <span class="n">src</span><span class="p">,</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+<span class="lineno">107</span> 
+<span class="lineno">108</span> 
+<span class="err hll"><span class="lineno">109</span> <span class="k">def</span> <span class="nf">parse_subst</span><span class="p">(</span><span class="n">subst</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Redefining name 'subst' from outer scope (line 22)<li>Missing function docstring</ul><span class="lineno">110</span>     <span class="n">ruletxts</span> <span class="o">=</span> <span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">subst</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">rule</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+<span class="lineno">111</span>     <span class="k">return</span> <span class="p">[</span><span class="n">parse_rule</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ruletxts</span><span class="p">]</span>
+<span class="lineno">112</span> 
+<span class="lineno">113</span> 
+<span class="err hll"><span class="lineno">114</span> <span class="k">def</span> <span class="nf">dklint</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">115</span>     <span class="n">_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">PYLINT</span><span class="p">,</span> <span class="s">&#39;--rcfile=&#39;</span> <span class="o">+</span> <span class="n">RCFILE</span><span class="p">,</span> <span class="s">&#39;-fhtml&#39;</span><span class="p">,</span> <span class="n">target</span><span class="p">]</span>
+<span class="lineno">116</span>     <span class="n">pipe</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">_args</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+<span class="lineno">117</span>     <span class="n">output</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">communicate</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="lineno">118</span>     <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+<span class="lineno">119</span>     <span class="c"># cmd = &#39;pylint.bat --rcfile=%s -fhtml %s&#39; % (RCFILE, target)</span>
+<span class="lineno">120</span>     <span class="c"># print &quot;COMMAND:&quot;, cmd</span>
+<span class="lineno">121</span>     <span class="c"># return &#39;\n&#39;.join(runcmd(cmd))</span>
+<span class="lineno">122</span> 
+<span class="lineno">123</span> 
+<span class="err hll"><span class="lineno">124</span> <span class="k">def</span> <span class="nf">write_stats</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">125</span>     <span class="n">txt</span> <span class="o">=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
+<span class="lineno">126</span>     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;pylint_stats.py&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="lineno">127</span>         <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">fp</span><span class="p">,</span> <span class="n">txt</span>
+<span class="lineno">128</span>     <span class="k">return</span> <span class="n">txt</span>
+<span class="lineno">129</span>         
+<span class="lineno">130</span> 
+<span class="err hll"><span class="lineno">131</span> <span class="k">def</span> <span class="nf">reportgrade</span><span class="p">(</span><span class="n">gradestr</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">132</span>     <span class="k">return</span> <span class="n">write_stats</span><span class="p">(</span><span class="s">&quot;rating =&quot;</span><span class="p">,</span> <span class="n">gradestr</span><span class="p">)</span>
+<span class="lineno">133</span> 
+<span class="lineno">134</span> 
+<span class="err hll"><span class="lineno">135</span> <span class="k">def</span> <span class="nf">dashify</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">136</span>     <span class="n">clean</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39; &#39;</span> <span class="ow">or</span> <span class="s">&#39;a&#39;</span> <span class="o">&lt;=</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="s">&#39;z&#39;</span><span class="p">])</span>
+<span class="lineno">137</span>     <span class="k">return</span> <span class="n">clean</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;--&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">)</span>
+<span class="lineno">138</span> 
+<span class="lineno">139</span> 
+<span class="err hll"><span class="lineno">140</span> <span class="k">def</span> <span class="nf">includesvg</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">141</span>     <span class="k">return</span> <span class="s">&#39;&lt;svg&#39;</span> <span class="o">+</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;&lt;svg&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="lineno">142</span> 
+<span class="lineno">143</span> 
+<span class="err hll"><span class="lineno">144</span> <span class="k">def</span> <span class="nf">editfn</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">145</span>     <span class="n">fn</span><span class="p">,</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+<span class="err hll"><span class="lineno">146</span>     <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">fn</span><span class="p">)(</span><span class="n">arg</span><span class="p">)</span>
+</span><ul class="errdescr"><li>Use of eval</ul><span class="lineno">147</span> 
+<span class="lineno">148</span> 
+<span class="err hll"><span class="lineno">149</span> <span class="k">def</span> <span class="nf">indent</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">150</span>     <span class="n">isize</span> <span class="o">=</span> <span class="p">{</span>
+<span class="lineno">151</span>         <span class="s">&#39;table&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="lineno">152</span>         <span class="s">&#39;thead&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="lineno">153</span>         <span class="s">&#39;tbody&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+<span class="lineno">154</span>         <span class="s">&#39;tr&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+<span class="lineno">155</span>         <span class="s">&#39;td&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+<span class="lineno">156</span>         <span class="s">&#39;th&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+<span class="lineno">157</span>     <span class="p">}</span>
+<span class="lineno">158</span> 
+<span class="lineno">159</span>     <span class="k">def</span> <span class="nf">_indent</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<span class="lineno">160</span>         <span class="k">return</span> <span class="s">&#39;    &#39;</span> <span class="o">*</span> <span class="n">n</span>
+<span class="lineno">161</span> 
+<span class="lineno">162</span>     <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">isize</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="lineno">163</span>         <span class="n">txt</span> <span class="o">=</span> <span class="n">txt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&lt;&#39;</span> <span class="o">+</span> <span class="n">item</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">_indent</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&lt;&#39;</span> <span class="o">+</span> <span class="n">item</span><span class="p">)</span>
+<span class="lineno">164</span>         <span class="n">txt</span> <span class="o">=</span> <span class="n">txt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&lt;/&#39;</span> <span class="o">+</span> <span class="n">item</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">_indent</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&lt;/&#39;</span> <span class="o">+</span> <span class="n">item</span><span class="p">)</span>
+<span class="lineno">165</span> 
+<span class="lineno">166</span>     <span class="k">return</span> <span class="n">txt</span>
+<span class="lineno">167</span> 
+<span class="lineno">168</span> 
+<span class="err hll"><span class="lineno">169</span> <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">170</span>     <span class="nb">open</span><span class="p">(</span><span class="s">&#39;foo.html&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+<span class="lineno">171</span>     <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">:</span>
+<span class="lineno">172</span>         <span class="n">txt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span>
+<span class="lineno">173</span>     <span class="n">txt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">r&#39;\$(.*?){(.*?)}&#39;</span><span class="p">,</span> <span class="n">editfn</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span>
+<span class="lineno">174</span>     <span class="k">return</span> <span class="n">indent</span><span class="p">(</span><span class="n">txt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">))</span>
+<span class="lineno">175</span> 
+<span class="lineno">176</span> 
+<span class="err hll"><span class="lineno">177</span> <span class="k">def</span> <span class="nf">project_dir</span><span class="p">():</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">178</span>     <span class="n">setup_py</span> <span class="o">=</span> <span class="n">pfind</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;setup.py&#39;</span><span class="p">)</span>
+<span class="lineno">179</span>     <span class="k">if</span> <span class="n">setup_py</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+<span class="lineno">180</span>         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;You must start dklint from within a project.&quot;</span><span class="p">)</span>
+<span class="lineno">181</span>     <span class="n">projdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">setup_py</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="lineno">182</span>     <span class="k">return</span> <span class="n">projdir</span>
+<span class="lineno">183</span> 
+<span class="lineno">184</span> 
+<span class="err hll"><span class="lineno">185</span> <span class="k">def</span> <span class="nf">make_build_lint</span><span class="p">(</span><span class="n">projdir</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">186</span>     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">projdir</span><span class="p">)</span>
+<span class="lineno">187</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="s">&#39;build/lint/files&#39;</span><span class="p">):</span>
+<span class="lineno">188</span>         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s">&#39;build/lint/files&#39;</span><span class="p">)</span>
+<span class="lineno">189</span>     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projdir</span><span class="p">,</span> <span class="s">&#39;build&#39;</span><span class="p">,</span> <span class="s">&#39;lint&#39;</span><span class="p">))</span>
+<span class="lineno">190</span> 
+<span class="lineno">191</span> 
+<span class="err hll"><span class="lineno">192</span> <span class="k">def</span> <span class="nf">cleandir</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">193</span>     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="lineno">194</span>     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="lineno">195</span>         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+<span class="lineno">196</span>             <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+<span class="lineno">197</span>     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s">&#39;files&#39;</span><span class="p">))</span>
+<span class="lineno">198</span>     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">):</span>
+<span class="lineno">199</span>         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+<span class="lineno">200</span>             <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+<span class="lineno">201</span> 
+<span class="lineno">202</span> 
+<span class="err hll"><span class="lineno">203</span> <span class="k">def</span> <span class="nf">project_name</span><span class="p">(</span><span class="n">projdir</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">204</span>     <span class="n">package_json</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projdir</span><span class="p">,</span> <span class="s">&#39;package.json&#39;</span><span class="p">)</span>
+<span class="lineno">205</span>     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">package_json</span><span class="p">):</span>
+<span class="lineno">206</span>         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">package_json</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+<span class="lineno">207</span>     <span class="k">else</span><span class="p">:</span>
+<span class="lineno">208</span>         <span class="n">_</span><span class="p">,</span> <span class="n">projdirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">projdir</span><span class="p">)</span>
+<span class="lineno">209</span>         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projdir</span><span class="p">,</span> <span class="n">projdirname</span><span class="p">)):</span>
+<span class="lineno">210</span>             <span class="k">return</span> <span class="n">projdirname</span>
+<span class="err hll"><span class="lineno">211</span>     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;You must create a package.json file with the project name.&quot;</span><span class="p">)</span>
+</span><ul class="errdescr"><li>Line too long (84/80)</ul><span class="lineno">212</span> 
+<span class="lineno">213</span> 
+<span class="err hll"><span class="lineno">214</span> <span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing class docstring<li>Too few public methods (1/2)</ul><span class="lineno">215</span>     <span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>      <span class="c"># relative to projdir</span>
+<span class="lineno">216</span>     <span class="n">abspath</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="lineno">217</span>     <span class="n">location</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>   <span class="c"># files/..</span>
+<span class="lineno">218</span>     
+<span class="lineno">219</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">projname</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="lineno">220</span>             
+<span class="lineno">221</span>         <span class="bp">self</span><span class="o">.</span><span class="n">abspath</span> <span class="o">=</span> <span class="n">abspath</span>
+<span class="lineno">222</span>         <span class="bp">self</span><span class="o">.</span><span class="n">fname</span> <span class="o">=</span> <span class="n">abspath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">projname</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="lineno">223</span>         <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s">&#39;files/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+<span class="lineno">224</span>         <span class="bp">self</span><span class="o">.</span><span class="n">html</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;.html&#39;</span>
+<span class="lineno">225</span>         <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+<span class="lineno">226</span>         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="lineno">227</span>         
+<span class="lineno">228</span> 
+<span class="err hll"><span class="lineno">229</span>     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing method docstring</ul><span class="lineno">230</span>         <span class="n">line</span> <span class="o">=</span> <span class="n">msg_id</span> <span class="o">=</span> <span class="n">symbol</span> <span class="o">=</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+<span class="lineno">231</span>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+<span class="lineno">232</span>             <span class="n">line</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="lineno">233</span>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+<span class="lineno">234</span>             <span class="n">msg_id</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="lineno">235</span>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+<span class="lineno">236</span>             <span class="n">symbol</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="lineno">237</span>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+<span class="lineno">238</span>             <span class="n">obj</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="lineno">239</span>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+<span class="lineno">240</span>             <span class="n">msg</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="lineno">241</span> 
+<span class="lineno">242</span>         <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="n">line</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span>
+<span class="lineno">243</span>             <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span> 
+<span class="lineno">244</span>             <span class="n">msg_id</span><span class="o">=</span><span class="n">msg_id</span><span class="p">,</span>
+<span class="lineno">245</span>             <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span>
+<span class="lineno">246</span>             <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
+<span class="lineno">247</span>             <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span>
+<span class="lineno">248</span>         <span class="p">))</span>
+<span class="lineno">249</span> 
+<span class="lineno">250</span>     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="lineno">251</span>         <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">)</span>
+<span class="lineno">252</span>         <span class="kn">import</span> <span class="nn">pprint</span>
+<span class="lineno">253</span>         <span class="k">return</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+<span class="lineno">254</span> 
+<span class="lineno">255</span> 
+<span class="err hll"><span class="lineno">256</span> <span class="k">class</span> <span class="nc">Files</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing class docstring</ul><span class="err hll"><span class="lineno">257</span>     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">projname</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing method docstring</ul><span class="lineno">258</span>         <span class="k">if</span> <span class="n">abspath</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+<span class="lineno">259</span>             <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">abspath</span><span class="p">]</span>
+<span class="lineno">260</span>             <span class="n">f</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="lineno">261</span>             <span class="k">return</span> <span class="n">f</span>
+<span class="lineno">262</span>         <span class="n">f</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">abspath</span><span class="p">,</span> <span class="n">projname</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+<span class="lineno">263</span>         <span class="nb">super</span><span class="p">(</span><span class="n">Files</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="n">abspath</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<span class="lineno">264</span>         <span class="k">return</span> <span class="n">f</span>
+<span class="lineno">265</span> 
+<span class="lineno">266</span> 
+<span class="err hll"><span class="lineno">267</span> <span class="k">def</span> <span class="nf">position_independence</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="n">projname</span><span class="p">,</span> <span class="n">projdir</span><span class="p">,</span> <span class="n">lintdir</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Unused argument 'lintdir'</ul><span class="lineno">268</span>     <span class="sd">&quot;&quot;&quot;Make the html relative to the project directory.</span>
+<span class="lineno">269</span> <span class="sd">    &quot;&quot;&quot;</span>
+<span class="lineno">270</span>     <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
+<span class="lineno">271</span>     
+<span class="err hll"><span class="lineno">272</span>     <span class="k">def</span> <span class="nf">regexquote</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">273</span>         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\\\\</span><span class="s">&#39;</span><span class="p">)</span>
+<span class="lineno">274</span> 
+<span class="lineno">275</span>     <span class="c"># convert all backslashes to forward-slashes.</span>
+<span class="err hll"><span class="lineno">276</span>     <span class="k">def</span> <span class="nf">fwdslashify</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring<li>Unused variable 'fwdslashify'</ul><span class="lineno">277</span>         <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="lineno">278</span> 
+<span class="err hll"><span class="lineno">279</span>     <span class="k">def</span> <span class="nf">copy_python</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">280</span>         <span class="n">src</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">abspath</span>
+<span class="lineno">281</span>         <span class="n">dst</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">html</span>
+<span class="lineno">282</span>         
+<span class="lineno">283</span>         <span class="kn">from</span> <span class="nn">pygments</span> <span class="kn">import</span> <span class="n">highlight</span>
+<span class="err hll"><span class="lineno">284</span>         <span class="kn">from</span> <span class="nn">pygments.lexers</span> <span class="kn">import</span> <span class="n">PythonLexer</span>
+</span><ul class="errdescr"><li>No name 'PythonLexer' in module 'pygments.lexers'</ul><span class="err hll"><span class="lineno">285</span>         <span class="kn">from</span> <span class="nn">pygments.formatters</span> <span class="kn">import</span> <span class="n">HtmlFormatter</span>
+</span><ul class="errdescr"><li>No name 'HtmlFormatter' in module 'pygments.formatters'</ul><span class="lineno">286</span>         <span class="n">code</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">src</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="lineno">287</span>         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="lineno">288</span>             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="lineno">289</span> <span class="s">            &lt;!doctype html&gt;</span>
+<span class="lineno">290</span> <span class="s">            &lt;html lang=&#39;nb-no&#39;&gt;</span>
+<span class="lineno">291</span> <span class="s">            &lt;head&gt;</span>
+<span class="lineno">292</span> <span class="s">            &lt;style&gt;</span>
+<span class="lineno">293</span> <span class="s">            </span><span class="si">%s</span><span class="s"></span>
+<span class="lineno">294</span> <span class="s">            &lt;/style&gt;</span>
+<span class="lineno">295</span> <span class="s">            &lt;/head&gt;</span>
+<span class="lineno">296</span> <span class="s">            &lt;body&gt;</span>
+<span class="lineno">297</span> <span class="s">            &quot;&quot;&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="n">get_css</span><span class="p">())</span>
+<span class="lineno">298</span>             <span class="n">fmt</span> <span class="o">=</span> <span class="n">HtmlFormatter</span><span class="p">(</span><span class="n">linenos</span><span class="o">=</span><span class="s">&#39;inline&#39;</span><span class="p">,</span> <span class="n">anchorlinenos</span><span class="o">=</span><span class="s">&#39;dkl&#39;</span><span class="p">)</span>
+<span class="lineno">299</span>             <span class="n">ccode</span> <span class="o">=</span> <span class="n">highlight</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">PythonLexer</span><span class="p">(),</span> <span class="n">fmt</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;u8&#39;</span><span class="p">)</span>
+<span class="lineno">300</span>             <span class="k">for</span> <span class="n">line</span><span class="p">,</span> <span class="n">errlst</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="lineno">301</span>                 <span class="n">errhtml</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="lineno">302</span>                 <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errlst</span><span class="p">:</span>
+<span class="lineno">303</span>                     <span class="n">errhtml</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">err</span><span class="p">[</span><span class="s">&#39;msg&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+<span class="err hll"><span class="lineno">304</span>                 <span class="n">errhtml</span> <span class="o">=</span> <span class="s">&#39;&lt;ul class=&quot;errdescr&quot;&gt;&lt;li&gt;</span><span class="si">%s</span><span class="s">&lt;/ul&gt;&#39;</span> <span class="o">%</span> <span class="s">&#39;&lt;li&gt;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errhtml</span><span class="p">)</span>
+</span><ul class="errdescr"><li>Line too long (83/80)</ul><span class="lineno">305</span>                 <span class="n">ccode</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+<span class="lineno">306</span>                     <span class="s">r&#39;&lt;span class=&quot;lineno&quot;&gt;(\s*</span><span class="si">%d</span><span class="s">)&lt;/span&gt;&#39;</span> <span class="o">%</span> <span class="n">line</span><span class="p">,</span>
+<span class="lineno">307</span>                     <span class="s">r&#39;&lt;span class=&quot;err hll&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;\1&lt;/span&gt;&#39;</span><span class="p">,</span>
+<span class="lineno">308</span>                     <span class="n">ccode</span>
+<span class="lineno">309</span>                 <span class="p">)</span>
+<span class="lineno">310</span>                 <span class="n">ccode</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+<span class="lineno">311</span>                     <span class="s">r&#39;&lt;span class=&quot;lineno&quot;&gt;(\s*</span><span class="si">%d</span><span class="s">)&lt;/span&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+<span class="lineno">312</span>                     <span class="s">r&#39;&lt;/span&gt;</span><span class="si">%s</span><span class="s">&lt;span class=&quot;lineno&quot;&gt;\1&lt;/span&gt;&#39;</span> <span class="o">%</span> <span class="n">errhtml</span><span class="p">,</span>
+<span class="lineno">313</span>                     <span class="n">ccode</span>
+<span class="lineno">314</span>                 <span class="p">)</span>
+<span class="lineno">315</span>             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ccode</span><span class="p">)</span>
+<span class="lineno">316</span>             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="lineno">317</span> <span class="s">            &lt;/body&gt;</span>
+<span class="lineno">318</span> <span class="s">            &lt;/html&gt;</span>
+<span class="lineno">319</span> <span class="s">            &quot;&quot;&quot;</span><span class="p">))</span>
+<span class="lineno">320</span>         
+<span class="lineno">321</span> 
+<span class="err hll"><span class="lineno">322</span>     <span class="k">def</span> <span class="nf">cp_file</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="err hll"><span class="lineno">323</span>         <span class="n">args</span> <span class="o">=</span>  <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;&lt;/td&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;&lt;/tr&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;&lt;td&gt;&#39;</span><span class="p">)</span>
+</span><ul class="errdescr"><li>Line too long (82/80)<li>Exactly one space required after assignment
+        args =  m.group(2).replace('&lt;/td>', '').replace('&lt;/tr>', '').split('&lt;td>')
+             ^</ul><span class="lineno">324</span>         <span class="n">f</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">projname</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+<span class="err hll"><span class="lineno">325</span>         <span class="k">return</span> <span class="s">&#39;&lt;a href=&quot;</span><span class="si">%s</span><span class="s">&quot;&gt;</span><span class="si">%s</span><span class="s">&lt;/a&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">%s</span><span class="s">&lt;/tr&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">html</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">fname</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</span><ul class="errdescr"><li>Line too long (84/80)</ul><span class="lineno">326</span>     
+<span class="lineno">327</span>     <span class="n">html</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+<span class="lineno">328</span>         <span class="s">&#39;(</span><span class="si">%s</span><span class="s">)&lt;/td&gt;&lt;td&gt;(.*?)&lt;/tr&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">regexquote</span><span class="p">(</span><span class="n">projdir</span><span class="p">)</span> <span class="o">+</span> <span class="s">r&#39;[/</span><span class="se">\\</span><span class="s">][^\s]*\.py&#39;</span><span class="p">),</span>
+<span class="lineno">329</span>         <span class="n">cp_file</span><span class="p">,</span>
+<span class="lineno">330</span>         <span class="n">html</span><span class="p">,</span>
+<span class="lineno">331</span>         <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span>
+<span class="lineno">332</span>     <span class="p">)</span>
+<span class="lineno">333</span> 
+<span class="lineno">334</span>     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;pylint_files.py&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="lineno">335</span>         <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">fp</span><span class="p">,</span> <span class="s">&#39;files = {&#39;</span>
+<span class="lineno">336</span>         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+<span class="lineno">337</span>             <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">fp</span><span class="p">,</span> <span class="s">&#39;    </span><span class="si">%r</span><span class="s">: </span><span class="si">%r</span><span class="s">,&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">fname</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<span class="lineno">338</span>         <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">fp</span><span class="p">,</span> <span class="s">&#39;}&#39;</span>
+<span class="lineno">339</span> 
+<span class="lineno">340</span>     <span class="k">print</span> <span class="s">&#39;copying files..&#39;</span>
+<span class="lineno">341</span>     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+<span class="lineno">342</span>         <span class="n">copy_python</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="lineno">343</span> 
+<span class="lineno">344</span>     <span class="k">return</span> <span class="n">html</span>
+<span class="lineno">345</span> 
+<span class="lineno">346</span> 
+<span class="err hll"><span class="lineno">347</span> <span class="k">def</span> <span class="nf">get_css</span><span class="p">():</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">348</span>     <span class="k">return</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="lineno">349</span> <span class="s">    .highlight .hll { background-color: #ffffcc }</span>
+<span class="lineno">350</span> <span class="s">    .highlight  { background: #f8f8f8; }</span>
+<span class="lineno">351</span> <span class="s">    .highlight .c { color: #408080; font-style: italic } /* Comment */</span>
+<span class="lineno">352</span> <span class="s">    .highlight .err { border: 1px solid #FF0000 } /* Error */</span>
+<span class="lineno">353</span> <span class="s">    .highlight .k { color: #008000; font-weight: bold } /* Keyword */</span>
+<span class="lineno">354</span> <span class="s">    .highlight .o { color: #666666 } /* Operator */</span>
+<span class="lineno">355</span> <span class="s">    .highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */</span>
+<span class="lineno">356</span> <span class="s">    .highlight .cp { color: #BC7A00 } /* Comment.Preproc */</span>
+<span class="lineno">357</span> <span class="s">    .highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */</span>
+<span class="lineno">358</span> <span class="s">    .highlight .cs { color: #408080; font-style: italic } /* Comment.Special */</span>
+<span class="lineno">359</span> <span class="s">    .highlight .gd { color: #A00000 } /* Generic.Deleted */</span>
+<span class="lineno">360</span> <span class="s">    .highlight .ge { font-style: italic } /* Generic.Emph */</span>
+<span class="lineno">361</span> <span class="s">    .highlight .gr { color: #FF0000 } /* Generic.Error */</span>
+<span class="lineno">362</span> <span class="s">    .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */</span>
+<span class="lineno">363</span> <span class="s">    .highlight .gi { color: #00A000 } /* Generic.Inserted */</span>
+<span class="lineno">364</span> <span class="s">    .highlight .go { color: #808080 } /* Generic.Output */</span>
+<span class="lineno">365</span> <span class="s">    .highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */</span>
+<span class="lineno">366</span> <span class="s">    .highlight .gs { font-weight: bold } /* Generic.Strong */</span>
+<span class="lineno">367</span> <span class="s">    .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */</span>
+<span class="lineno">368</span> <span class="s">    .highlight .gt { color: #0040D0 } /* Generic.Traceback */</span>
+<span class="lineno">369</span> <span class="s">    .highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */</span>
+<span class="lineno">370</span> <span class="s">    .highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */</span>
+<span class="lineno">371</span> <span class="s">    .highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */</span>
+<span class="lineno">372</span> <span class="s">    .highlight .kp { color: #008000 } /* Keyword.Pseudo */</span>
+<span class="lineno">373</span> <span class="s">    .highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */</span>
+<span class="lineno">374</span> <span class="s">    .highlight .kt { color: #B00040 } /* Keyword.Type */</span>
+<span class="lineno">375</span> <span class="s">    .highlight .m { color: #666666 } /* Literal.Number */</span>
+<span class="lineno">376</span> <span class="s">    .highlight .s { color: #BA2121 } /* Literal.String */</span>
+<span class="lineno">377</span> <span class="s">    .highlight .na { color: #7D9029 } /* Name.Attribute */</span>
+<span class="lineno">378</span> <span class="s">    .highlight .nb { color: #008000 } /* Name.Builtin */</span>
+<span class="lineno">379</span> <span class="s">    .highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */</span>
+<span class="lineno">380</span> <span class="s">    .highlight .no { color: #880000 } /* Name.Constant */</span>
+<span class="lineno">381</span> <span class="s">    .highlight .nd { color: #AA22FF } /* Name.Decorator */</span>
+<span class="lineno">382</span> <span class="s">    .highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */</span>
+<span class="lineno">383</span> <span class="s">    .highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */</span>
+<span class="lineno">384</span> <span class="s">    .highlight .nf { color: #0000FF } /* Name.Function */</span>
+<span class="lineno">385</span> <span class="s">    .highlight .nl { color: #A0A000 } /* Name.Label */</span>
+<span class="lineno">386</span> <span class="s">    .highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */</span>
+<span class="lineno">387</span> <span class="s">    .highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */</span>
+<span class="lineno">388</span> <span class="s">    .highlight .nv { color: #19177C } /* Name.Variable */</span>
+<span class="lineno">389</span> <span class="s">    .highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */</span>
+<span class="lineno">390</span> <span class="s">    .highlight .w { color: #bbbbbb } /* Text.Whitespace */</span>
+<span class="lineno">391</span> <span class="s">    .highlight .mf { color: #666666 } /* Literal.Number.Float */</span>
+<span class="lineno">392</span> <span class="s">    .highlight .mh { color: #666666 } /* Literal.Number.Hex */</span>
+<span class="lineno">393</span> <span class="s">    .highlight .mi { color: #666666 } /* Literal.Number.Integer */</span>
+<span class="lineno">394</span> <span class="s">    .highlight .mo { color: #666666 } /* Literal.Number.Oct */</span>
+<span class="lineno">395</span> <span class="s">    .highlight .sb { color: #BA2121 } /* Literal.String.Backtick */</span>
+<span class="lineno">396</span> <span class="s">    .highlight .sc { color: #BA2121 } /* Literal.String.Char */</span>
+<span class="lineno">397</span> <span class="s">    .highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */</span>
+<span class="lineno">398</span> <span class="s">    .highlight .s2 { color: #BA2121 } /* Literal.String.Double */</span>
+<span class="lineno">399</span> <span class="s">    .highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */</span>
+<span class="lineno">400</span> <span class="s">    .highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */</span>
+<span class="lineno">401</span> <span class="s">    .highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */</span>
+<span class="lineno">402</span> <span class="s">    .highlight .sx { color: #008000 } /* Literal.String.Other */</span>
+<span class="lineno">403</span> <span class="s">    .highlight .sr { color: #BB6688 } /* Literal.String.Regex */</span>
+<span class="lineno">404</span> <span class="s">    .highlight .s1 { color: #BA2121 } /* Literal.String.Single */</span>
+<span class="lineno">405</span> <span class="s">    .highlight .ss { color: #19177C } /* Literal.String.Symbol */</span>
+<span class="lineno">406</span> <span class="s">    .highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */</span>
+<span class="lineno">407</span> <span class="s">    .highlight .vc { color: #19177C } /* Name.Variable.Class */</span>
+<span class="lineno">408</span> <span class="s">    .highlight .vg { color: #19177C } /* Name.Variable.Global */</span>
+<span class="lineno">409</span> <span class="s">    .highlight .vi { color: #19177C } /* Name.Variable.Instance */</span>
+<span class="lineno">410</span> <span class="s">    .highlight .il { color: #666666 } /* Literal.Number.Integer.Long */</span>
+<span class="lineno">411</span> <span class="s">    ul.errdescr {font-weight:bold; color:red; margin:0;padding:14px 3ex; white-space:normal;list-style-type:none;border:1px solid #666; border-radius:0 5px 5px;}</span>
+<span class="lineno">412</span> <span class="s">    &quot;&quot;&quot;</span>
+<span class="lineno">413</span> 
+<span class="lineno">414</span> 
+<span class="err hll"><span class="lineno">415</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span><ul class="errdescr"><li>Missing function docstring</ul><span class="lineno">416</span>     <span class="kn">import</span> <span class="nn">time</span>
+<span class="lineno">417</span>     <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="lineno">418</span>     
+<span class="lineno">419</span>     <span class="n">projdir</span> <span class="o">=</span> <span class="n">project_dir</span><span class="p">()</span>
+<span class="lineno">420</span>     <span class="n">lintdir</span> <span class="o">=</span> <span class="n">make_build_lint</span><span class="p">(</span><span class="n">projdir</span><span class="p">)</span>
+<span class="lineno">421</span>     <span class="n">cleandir</span><span class="p">(</span><span class="n">lintdir</span><span class="p">)</span>
+<span class="lineno">422</span>     <span class="n">projname</span> <span class="o">=</span> <span class="n">project_name</span><span class="p">(</span><span class="n">projdir</span><span class="p">)</span>
+<span class="lineno">423</span> 
+<span class="lineno">424</span>     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">lintdir</span><span class="p">)</span>
+<span class="lineno">425</span>     <span class="n">target</span> <span class="o">=</span> <span class="s">&#39;../../&#39;</span> <span class="o">+</span> <span class="n">projname</span>
+<span class="lineno">426</span>     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;pylint-index.html&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="lineno">427</span>         <span class="n">report</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span><span class="n">parse_subst</span><span class="p">(</span><span class="n">subst</span><span class="p">),</span> <span class="n">dklint</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+<span class="lineno">428</span>         <span class="n">html</span> <span class="o">=</span> <span class="n">position_independence</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">projname</span><span class="p">,</span> <span class="n">projdir</span><span class="p">,</span> <span class="n">lintdir</span><span class="p">)</span>
+<span class="lineno">429</span>         <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+<span class="lineno">430</span>     <span class="k">print</span> <span class="s">&#39;done in </span><span class="si">%.2f</span><span class="s"> secs.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+<span class="lineno">431</span> 
+<span class="lineno">432</span>     
+<span class="lineno">433</span> <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="lineno">434</span>     <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+</body>
+</html>

@@ -1,0 +1,466 @@
+<html>
+<head>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css" rel="stylesheet">
+    <style>
+        td.pre { font: 10px/11px monospace; white-space: pre; }
+        a.toplink { font: 11px/10px monospace; position:relative; right: -3ex; }
+        table td,
+        table th { text-align: center; }
+        table td:first-child,
+        table th:first-child  { text-align: right; font-weight: bold; }
+        table th:first-child  { width: 20%; }
+        #messages + table td { font: 11px/12px monospace; white-space: pre; text-align: left; }
+    </style>
+    <script src="http://static.datakortet.no/dk/dk.js"></script>
+    <script>
+    dk.ready(function () {
+        var toc = $('#toc > ul');
+        $(':header').each(function () {
+            toc.append($('<li/>').append($('<a/>', {
+                href: '#' + $(this).prop('id')
+            }).text($(this).text())));
+            $(this).append('<a class="toplink" href="#top">[top]</a>');
+        });
+    });
+    </script>
+</head>
+<body>
+<div class="container">
+<div id="toc">
+    <h1>Contents:</h1>
+    <ul></ul>
+</div>
+<h1>Report</h1>
+<p>197 statements analysed.</p><div>
+<h2 id="statistics-by-type">Statistics by type</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+            <thead>
+        <tr class="header">
+            <th>type</th>
+            <th>number</th>
+            <th>old number</th>
+            <th>difference</th>
+            <th>%documented</th>
+            <th>%badname</th>
+            </thead>
+        <tbody>
+        <tr>
+            <td>module</td><td>3</td><td>3</td><td>=</td><td>100.00</td><td>0.00</td>
+        </tr>
+        <tr>
+            <td>class</td><td>2</td><td>2</td><td>=</td><td>0.00</td><td>0.00</td>
+        </tr>
+        <tr>
+            <td>method</td><td>4</td><td>4</td><td>=</td><td>50.00</td><td>0.00</td>
+        </tr>
+        <tr>
+            <td>function</td><td>24</td><td>24</td><td>=</td><td>12.50</td><td>0.00</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+<h2 id="external-dependencies">External dependencies</h2>
+<pre>pygments (dklint.dklint)
+  \-formatters (dklint.dklint)
+  \-lexers (dklint.dklint)</pre></div>
+<div>
+<h2 id="modules-dependencies-graph">Modules dependencies graph</h2>
+<p>imports <svg width="257pt" height="206pt"
+ viewBox="0.00 0.00 257.00 206.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 202)">
+<title>pylint&#45;import&#45;graph</title>
+<g id="a_graph0"><a xlink:href=".">
+<polygon fill="white" stroke="none" points="-4,4 -4,-202 253,-202 253,4 -4,4"/>
+</a>
+</g>
+<!-- dklint.pfind -->
+<g id="node1" class="node"><title>dklint.pfind</title>
+<polygon fill="none" stroke="black" points="223.5,-198 143.5,-198 143.5,-162 223.5,-162 223.5,-198"/>
+<text text-anchor="middle" x="183.5" y="-176.3" font-family="Times New Roman,serif" font-size="14.00">dklint.pfind</text>
+</g>
+<!-- dklint.dklint -->
+<g id="node2" class="node"><title>dklint.dklint</title>
+<polygon fill="none" stroke="black" points="82,-117 0,-117 0,-81 82,-81 82,-117"/>
+<text text-anchor="middle" x="41" y="-95.3" font-family="Times New Roman,serif" font-size="14.00">dklint.dklint</text>
+</g>
+<!-- dklint.dklint&#45;&gt;dklint.pfind -->
+<g id="edge1" class="edge"><title>dklint.dklint&#45;&gt;dklint.pfind</title>
+<path fill="none" stroke="black" d="M64.742,-117.178C79.4035,-128.379 99.1818,-142.545 118,-153 123.099,-155.833 128.555,-158.553 134.056,-161.104"/>
+<polygon fill="black" stroke="black" points="132.742,-164.349 143.3,-165.225 135.592,-157.956 132.742,-164.349"/>
+</g>
+<!-- pygments -->
+<g id="node3" class="node"><title>pygments</title>
+<polygon fill="none" stroke="black" points="219,-144 148,-144 148,-108 219,-108 219,-144"/>
+<text text-anchor="middle" x="183.5" y="-122.3" font-family="Times New Roman,serif" font-size="14.00">pygments</text>
+</g>
+<!-- dklint.dklint&#45;&gt;pygments -->
+<g id="edge2" class="edge"><title>dklint.dklint&#45;&gt;pygments</title>
+<path fill="none" stroke="black" d="M82.2617,-106.737C99.6958,-110.087 120.163,-114.021 138.043,-117.457"/>
+<polygon fill="black" stroke="black" points="137.469,-120.91 147.95,-119.36 138.79,-114.036 137.469,-120.91"/>
+</g>
+<!-- pygments.formatters -->
+<g id="node4" class="node"><title>pygments.formatters</title>
+<polygon fill="none" stroke="black" points="249,-90 118,-90 118,-54 249,-54 249,-90"/>
+<text text-anchor="middle" x="183.5" y="-68.3" font-family="Times New Roman,serif" font-size="14.00">pygments.formatters</text>
+</g>
+<!-- dklint.dklint&#45;&gt;pygments.formatters -->
+<g id="edge3" class="edge"><title>dklint.dklint&#45;&gt;pygments.formatters</title>
+<path fill="none" stroke="black" d="M82.2617,-91.2629C90.3332,-89.7118 99.0549,-88.0357 107.869,-86.3419"/>
+<polygon fill="black" stroke="black" points="108.67,-89.7521 117.83,-84.4277 107.349,-82.8779 108.67,-89.7521"/>
+</g>
+<!-- pygments.lexers -->
+<g id="node5" class="node"><title>pygments.lexers</title>
+<polygon fill="none" stroke="black" points="237,-36 130,-36 130,-0 237,-0 237,-36"/>
+<text text-anchor="middle" x="183.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">pygments.lexers</text>
+</g>
+<!-- dklint.dklint&#45;&gt;pygments.lexers -->
+<g id="edge4" class="edge"><title>dklint.dklint&#45;&gt;pygments.lexers</title>
+<path fill="none" stroke="black" d="M64.742,-80.8215C79.4035,-69.6215 99.1818,-55.4546 118,-45 120.812,-43.4377 123.733,-41.9095 126.711,-40.4252"/>
+<polygon fill="black" stroke="black" points="128.237,-43.5749 135.759,-36.1132 125.226,-37.2558 128.237,-43.5749"/>
+</g>
+</g>
+</svg>
+</p><p>external imports <svg width="257pt" height="152pt"
+ viewBox="0.00 0.00 257.00 152.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 148)">
+<title>pylint&#45;external&#45;imports</title>
+<g id="a_graph0"><a xlink:href=".">
+<polygon fill="white" stroke="none" points="-4,4 -4,-148 253,-148 253,4 -4,4"/>
+</a>
+</g>
+<!-- pygments -->
+<g id="node1" class="node"><title>pygments</title>
+<polygon fill="none" stroke="black" points="219,-144 148,-144 148,-108 219,-108 219,-144"/>
+<text text-anchor="middle" x="183.5" y="-122.3" font-family="Times New Roman,serif" font-size="14.00">pygments</text>
+</g>
+<!-- dklint.dklint -->
+<g id="node2" class="node"><title>dklint.dklint</title>
+<polygon fill="none" stroke="black" points="82,-90 0,-90 0,-54 82,-54 82,-90"/>
+<text text-anchor="middle" x="41" y="-68.3" font-family="Times New Roman,serif" font-size="14.00">dklint.dklint</text>
+</g>
+<!-- dklint.dklint&#45;&gt;pygments -->
+<g id="edge1" class="edge"><title>dklint.dklint&#45;&gt;pygments</title>
+<path fill="none" stroke="black" d="M82.2617,-87.4742C99.7768,-94.206 120.354,-102.115 138.292,-109.009"/>
+<polygon fill="black" stroke="black" points="137.36,-112.4 147.95,-112.721 139.871,-105.866 137.36,-112.4"/>
+</g>
+<!-- pygments.formatters -->
+<g id="node3" class="node"><title>pygments.formatters</title>
+<polygon fill="none" stroke="black" points="249,-90 118,-90 118,-54 249,-54 249,-90"/>
+<text text-anchor="middle" x="183.5" y="-68.3" font-family="Times New Roman,serif" font-size="14.00">pygments.formatters</text>
+</g>
+<!-- dklint.dklint&#45;&gt;pygments.formatters -->
+<g id="edge2" class="edge"><title>dklint.dklint&#45;&gt;pygments.formatters</title>
+<path fill="none" stroke="black" d="M82.2617,-72C90.2464,-72 98.8674,-72 107.585,-72"/>
+<polygon fill="black" stroke="black" points="107.83,-75.5001 117.83,-72 107.83,-68.5001 107.83,-75.5001"/>
+</g>
+<!-- pygments.lexers -->
+<g id="node4" class="node"><title>pygments.lexers</title>
+<polygon fill="none" stroke="black" points="237,-36 130,-36 130,-0 237,-0 237,-36"/>
+<text text-anchor="middle" x="183.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">pygments.lexers</text>
+</g>
+<!-- dklint.dklint&#45;&gt;pygments.lexers -->
+<g id="edge3" class="edge"><title>dklint.dklint&#45;&gt;pygments.lexers</title>
+<path fill="none" stroke="black" d="M82.2617,-56.5258C95.8979,-51.2848 111.39,-45.3306 126.048,-39.697"/>
+<polygon fill="black" stroke="black" points="127.453,-42.9065 135.532,-36.0519 124.942,-36.3725 127.453,-42.9065"/>
+</g>
+</g>
+</svg>
+</p><p>internal imports <svg width="206pt" height="44pt"
+ viewBox="0.00 0.00 206.00 44.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+<title>pylint&#45;internal&#45;deps</title>
+<g id="a_graph0"><a xlink:href=".">
+<polygon fill="white" stroke="none" points="-4,4 -4,-40 202,-40 202,4 -4,4"/>
+</a>
+</g>
+<!-- dklint.pfind -->
+<g id="node1" class="node"><title>dklint.pfind</title>
+<polygon fill="none" stroke="black" points="198,-36 118,-36 118,-0 198,-0 198,-36"/>
+<text text-anchor="middle" x="158" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">dklint.pfind</text>
+</g>
+<!-- dklint.dklint -->
+<g id="node2" class="node"><title>dklint.dklint</title>
+<polygon fill="none" stroke="black" points="82,-36 0,-36 0,-0 82,-0 82,-36"/>
+<text text-anchor="middle" x="41" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">dklint.dklint</text>
+</g>
+<!-- dklint.dklint&#45;&gt;dklint.pfind -->
+<g id="edge1" class="edge"><title>dklint.dklint&#45;&gt;dklint.pfind</title>
+<path fill="none" stroke="black" d="M82.2214,-18C90.418,-18 99.1309,-18 107.604,-18"/>
+<polygon fill="black" stroke="black" points="107.77,-21.5001 117.77,-18 107.77,-14.5001 107.77,-21.5001"/>
+</g>
+</g>
+</svg>
+</p></div>
+<div>
+<h2 id="raw-metrics">Raw metrics</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+            <thead>
+        <tr class="header">
+            <th>type</th>
+            <th>number</th>
+            <th>%</th>
+            <th>previous</th>
+            <th>difference</th>
+            </thead>
+        <tbody>
+        <tr>
+            <td>code</td><td>367</td><td>84.17</td><td>367</td><td>=</td>
+        </tr>
+        <tr>
+            <td>docstring</td><td>22</td><td>5.05</td><td>22</td><td>=</td>
+        </tr>
+        <tr>
+            <td>comment</td><td>8</td><td>1.83</td><td>8</td><td>=</td>
+        </tr>
+        <tr>
+            <td>empty</td><td>39</td><td>8.94</td><td>39</td><td>=</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+<h2 id="duplication">Duplication</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+            <thead>
+        <tr class="header">
+            <th>&#160;</th>
+            <th>now</th>
+            <th>previous</th>
+            <th>difference</th>
+            </thead>
+        <tbody>
+        <tr>
+            <th>nb duplicated lines</th>
+            <td>0</td><td>0</td><td>=</td>
+        </tr>
+        <tr>
+            <th>percent duplicated lines</th>
+            <td>0.000</td><td>0.000</td><td>=</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+<h2 id="messages-by-category">Messages by category</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+            <thead>
+        <tr class="header">
+            <th>type</th>
+            <th>number</th>
+            <th>previous</th>
+            <th>difference</th>
+            </thead>
+        <tbody>
+        <tr>
+            <td>convention</td><td>30</td><td>30</td><td>=</td>
+        </tr>
+        <tr>
+            <td>refactor</td><td>1</td><td>1</td><td>=</td>
+        </tr>
+        <tr>
+            <td>warning</td><td>4</td><td>5</td><td>-1.00</td>
+        </tr>
+        <tr>
+            <td>error</td><td>2</td><td>2</td><td>=</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+<h2 id="errors-warnings-by-module">% errors / warnings by module</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+            <thead>
+        <tr class="header">
+            <th>module</th>
+            <th>error</th>
+            <th>warning</th>
+            <th>refactor</th>
+            <th>convention</th>
+            </thead>
+        <tbody>
+        <tr>
+            <td>dklint.dklint</td><td>100.00</td><td>100.00</td><td>100.00</td><td>96.67</td>
+        </tr>
+        <tr>
+            <td>dklint.pfind</td><td>0.00</td><td>0.00</td><td>0.00</td><td>3.33</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+<h2 id="messages">Messages</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+            <thead>
+        <tr class="header">
+            <th>message id</th>
+            <th>occurrences</th>
+            </thead>
+        <tbody>
+        <tr>
+            <td>missing-docstring</td><td>25</td>
+        </tr>
+        <tr>
+            <td>line-too-long</td><td>4</td>
+        </tr>
+        <tr>
+            <td>no-name-in-module</td><td>2</td>
+        </tr>
+        <tr>
+            <td>unused-variable</td><td>1</td>
+        </tr>
+        <tr>
+            <td>unused-argument</td><td>1</td>
+        </tr>
+        <tr>
+            <td>too-few-public-methods</td><td>1</td>
+        </tr>
+        <tr>
+            <td>redefined-outer-name</td><td>1</td>
+        </tr>
+        <tr>
+            <td>eval-used</td><td>1</td>
+        </tr>
+        <tr>
+            <td>bad-whitespace</td><td>1</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+<h2 id="global-evaluation">Global evaluation</h2>
+Your code has been rated at rating = 7.72/10 (previous run: 7.66/10, +0.05)
+If you commit now, people should not be making nasty comments about you on c.l.py</div>
+<div>
+<h2 id="messages">Messages</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+            <thead>
+        <tr class="header">
+            <th>path</th>
+            <th>line</th>
+            <th>msg_id</th>
+            <th>symbol</th>
+            <th>obj</th>
+            <th>msg</th>
+            </thead>
+        <tbody>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>211</td><td>C0301</td><td>line-too-long</td><td>&#160;</td><td>Line too long (84/80)</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>304</td><td>C0301</td><td>line-too-long</td><td>&#160;</td><td>Line too long (83/80)</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>323</td><td>C0301</td><td>line-too-long</td><td>&#160;</td><td>Line too long (82/80)</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>323</td><td>C0326</td><td>bad-whitespace</td><td>&#160;</td><td>Exactly one space required after assignment
+        args =  m.group(2).replace('&lt;/td>', '').replace('&lt;/tr>', '').split('&lt;td>')
+             ^</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>325</td><td>C0301</td><td>line-too-long</td><td>&#160;</td><td>Line too long (84/80)</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>104</td><td>C0111</td><td>missing-docstring</td><td>parse_rule</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>109</td><td>W0621</td><td>redefined-outer-name</td><td>parse_subst</td><td>Redefining name 'subst' from outer scope (line 22)</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>109</td><td>C0111</td><td>missing-docstring</td><td>parse_subst</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>114</td><td>C0111</td><td>missing-docstring</td><td>dklint</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>124</td><td>C0111</td><td>missing-docstring</td><td>write_stats</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>131</td><td>C0111</td><td>missing-docstring</td><td>reportgrade</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>135</td><td>C0111</td><td>missing-docstring</td><td>dashify</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>140</td><td>C0111</td><td>missing-docstring</td><td>includesvg</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>144</td><td>C0111</td><td>missing-docstring</td><td>editfn</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>146</td><td>W0123</td><td>eval-used</td><td>editfn</td><td>Use of eval</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>149</td><td>C0111</td><td>missing-docstring</td><td>indent</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>169</td><td>C0111</td><td>missing-docstring</td><td>replace</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>177</td><td>C0111</td><td>missing-docstring</td><td>project_dir</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>185</td><td>C0111</td><td>missing-docstring</td><td>make_build_lint</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>192</td><td>C0111</td><td>missing-docstring</td><td>cleandir</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>203</td><td>C0111</td><td>missing-docstring</td><td>project_name</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>214</td><td>C0111</td><td>missing-docstring</td><td>File</td><td>Missing class docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>229</td><td>C0111</td><td>missing-docstring</td><td>File.update</td><td>Missing method docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>214</td><td>R0903</td><td>too-few-public-methods</td><td>File</td><td>Too few public methods (1/2)</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>256</td><td>C0111</td><td>missing-docstring</td><td>Files</td><td>Missing class docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>257</td><td>C0111</td><td>missing-docstring</td><td>Files.add</td><td>Missing method docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>272</td><td>C0111</td><td>missing-docstring</td><td>position_independence.regexquote</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>276</td><td>C0111</td><td>missing-docstring</td><td>position_independence.fwdslashify</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>279</td><td>C0111</td><td>missing-docstring</td><td>position_independence.copy_python</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>284</td><td>E0611</td><td>no-name-in-module</td><td>position_independence.copy_python</td><td>No name 'PythonLexer' in module 'pygments.lexers'</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>285</td><td>E0611</td><td>no-name-in-module</td><td>position_independence.copy_python</td><td>No name 'HtmlFormatter' in module 'pygments.formatters'</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>322</td><td>C0111</td><td>missing-docstring</td><td>position_independence.cp_file</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>267</td><td>W0613</td><td>unused-argument</td><td>position_independence</td><td>Unused argument 'lintdir'</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>276</td><td>W0612</td><td>unused-variable</td><td>position_independence.fwdslashify</td><td>Unused variable 'fwdslashify'</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>347</td><td>C0111</td><td>missing-docstring</td><td>get_css</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,dklint.html">dklint/dklint.py</a></td><td>415</td><td>C0111</td><td>missing-docstring</td><td>main</td><td>Missing function docstring</td>
+        </tr>
+        <tr>
+            <td><a href="files/dklint,pfind.html">dklint/pfind.py</a></td><td>16</td><td>C0111</td><td>missing-docstring</td><td>pfind.parents</td><td>Missing function docstring</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+</body>
+</html>
